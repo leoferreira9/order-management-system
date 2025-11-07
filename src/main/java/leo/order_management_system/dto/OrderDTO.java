@@ -1,5 +1,7 @@
 package leo.order_management_system.dto;
 
+import leo.order_management_system.model.Order;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,6 +21,13 @@ public class OrderDTO {
         this.date = date;
         this.clientDTO = clientDTO;
         this.itemsDTO = itemsDTO;
+    }
+
+    public OrderDTO(Order order){
+        this.id = order.getId();
+        this.date = order.getDate();
+        this.clientDTO = new ClientDTO(order.getClient());
+        this.itemsDTO = order.getItems().stream().map(OrderItemDTO::new).toList();
     }
 
     public Long getId() {

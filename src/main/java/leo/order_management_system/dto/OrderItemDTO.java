@@ -1,5 +1,7 @@
 package leo.order_management_system.dto;
 
+import leo.order_management_system.model.OrderItem;
+
 public class OrderItemDTO {
 
     private Long id;
@@ -14,6 +16,13 @@ public class OrderItemDTO {
         this.quantity = quantity;
         this.price = price;
         this.productDTO = productDTO;
+    }
+
+    public OrderItemDTO(OrderItem orderItem){
+        this.id = orderItem.getId();
+        this.quantity = orderItem.getQuantity();
+        this.price = orderItem.getPrice();
+        this.productDTO = new ProductDTO(orderItem.getProduct());
     }
 
     public Long getId() {

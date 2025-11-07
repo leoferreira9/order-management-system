@@ -1,5 +1,7 @@
 package leo.order_management_system.dto;
 
+import leo.order_management_system.model.Client;
+
 public class ClientDTO {
 
     private String name;
@@ -10,6 +12,11 @@ public class ClientDTO {
     public ClientDTO(String name, String email) {
         this.name = name;
         this.email = email;
+    }
+
+    public ClientDTO(Client client) {
+        this.name = client.getName();
+        this.email = client.getEmail();
     }
 
     public String getName() {
