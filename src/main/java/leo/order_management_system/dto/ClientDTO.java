@@ -4,19 +4,24 @@ import leo.order_management_system.model.Client;
 
 public class ClientDTO {
 
+    private Long id;
     private String name;
     private String email;
 
     public ClientDTO(){}
 
-    public ClientDTO(String name, String email) {
-        this.name = name;
-        this.email = email;
-    }
-
     public ClientDTO(Client client) {
+        this.id = client.getId();
         this.name = client.getName();
         this.email = client.getEmail();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

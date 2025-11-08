@@ -19,19 +19,19 @@ public class ClientService {
     public ClientDTO create(Client client){
         if(clientRepository.findByEmail(client.getEmail()).isPresent()) throw new ClientAlreadyRegistered("Email already registered!");
         clientRepository.save(client);
-        return new ClientDTO(client.getName(), client.getEmail());
+        return new ClientDTO(client);
 
     }
 
     public ClientDTO findById(Long id){
         Client client = clientRepository.findById(id).orElseThrow(() -> new EntityNotFound("Client not found with ID: " + id));
-        return new ClientDTO(client.getName(), client.getEmail());
+        return new ClientDTO(client);
     }
 
     public List<ClientDTO> findAll(){
         List<Client> clients = clientRepository.findAll();
         if(clients.isEmpty()) throw new EntityNotFound("No clients registered");
-        return clients.stream().map(c -> new ClientDTO(c.getName(), c.getEmail())).toList();
+        return clients.stream().map(ClientDTO::new).toList();
     }
 
     public ClientDTO update(Client client){
@@ -41,7 +41,7 @@ public class ClientService {
         existingClient.setName(client.getName());
         existingClient.setEmail(client.getEmail());
         clientRepository.save(existingClient);
-        return new ClientDTO(existingClient.getName(), existingClient.getEmail());
+        return new ClientDTO(client);
     }
 
     public void delete(Long id){
