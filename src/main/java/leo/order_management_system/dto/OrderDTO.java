@@ -16,13 +16,6 @@ public class OrderDTO {
 
     public OrderDTO(){}
 
-    public OrderDTO(Long id, LocalDateTime date, ClientDTO clientDTO, List<OrderItemDTO> itemsDTO) {
-        this.id = id;
-        this.date = date;
-        this.clientDTO = clientDTO;
-        this.itemsDTO = itemsDTO;
-    }
-
     public OrderDTO(Order order){
         this.id = order.getId();
         this.date = order.getDate();
