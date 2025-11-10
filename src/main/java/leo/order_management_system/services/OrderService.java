@@ -61,9 +61,20 @@ public class OrderService {
     public OrderDTO update(Order order){
         Order existingOrder = orderRepository
                 .findById(order.getId()).orElseThrow(() -> new EntityNotFound("Order not found with ID:" + order.getId()));
-        existingOrder.setClient(order.getClient());
+
+        Client client = clientRepository
+                .findById(order.getClient().getId()).orElseThrow(() -> new EntityNotFound("Client not found with ID: " + order.getClient().getId()));
+
+        existingOrder.setClient(client);
         existingOrder.setDate(order.getDate());
-        existingOrder.setItems(order.getItems());
+
+        existingOrder.getItems().clear();
+
+        order.getItems().forEach(item -> {
+            item.setOrder(existingOrder);
+            existingOrder.getItems().add(item);
+        });
+
         orderRepository.save(existingOrder);
 
         return new OrderDTO(existingOrder);
