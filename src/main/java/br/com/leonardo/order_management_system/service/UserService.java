@@ -27,8 +27,8 @@ public class UserService {
 
     public UserDTO create(UserCreateDTO dto){
         User user = userMapper.toEntity(dto);
-        userRepository.save(user);
-        return userMapper.toDto(user);
+        User savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
     }
 
     public UserDTO findById(Long id){
@@ -49,9 +49,9 @@ public class UserService {
         userExists.setLastName(dto.getLastName());
         userExists.setPhoneNumber(dto.getPhoneNumber());
 
-        userRepository.save(userExists);
+        User updatedUser = userRepository.save(userExists);
 
-        return userMapper.toDto(userExists);
+        return userMapper.toDto(updatedUser);
     }
 
     public void delete(Long id){
