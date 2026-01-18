@@ -21,7 +21,7 @@ public class Order {
     private Long id;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<OrderItem> orderItemList = new ArrayList<>();
+    private List<OrderItem> orderItemList = new ArrayList<>();
 
     @Column(nullable = false, unique = true)
     private String orderNumber;
