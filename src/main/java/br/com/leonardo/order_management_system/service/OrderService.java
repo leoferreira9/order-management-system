@@ -58,6 +58,7 @@ public class OrderService {
         order.setOrderStatus(OrderStatus.PROCESSING);
         order.setAddress(address);
         order.setUser(user);
+        order.setTotalValue(new BigDecimal(100));
 
         Order savedOrder = orderRepository.save(order);
         return orderMapper.toDto(savedOrder);
