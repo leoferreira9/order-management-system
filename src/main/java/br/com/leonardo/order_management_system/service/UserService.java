@@ -4,7 +4,7 @@ import br.com.leonardo.order_management_system.dto.user.UserCreateDTO;
 import br.com.leonardo.order_management_system.dto.user.UserDTO;
 import br.com.leonardo.order_management_system.entity.User;
 import br.com.leonardo.order_management_system.exception.EntityNotFoundException;
-import br.com.leonardo.order_management_system.mapper.user.UserMapper;
+import br.com.leonardo.order_management_system.mapper.UserMapper;
 import br.com.leonardo.order_management_system.repository.UserRepository;
 import org.springframework.stereotype.Service;
 

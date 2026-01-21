@@ -1,4 +1,4 @@
-package br.com.leonardo.order_management_system.mapper.user;
+package br.com.leonardo.order_management_system.mapper;
 
 import br.com.leonardo.order_management_system.dto.user.UserCreateDTO;
 import br.com.leonardo.order_management_system.dto.user.UserDTO;

@@ -9,7 +9,7 @@ import br.com.leonardo.order_management_system.entity.User;
 import br.com.leonardo.order_management_system.enums.DeliveryType;
 import br.com.leonardo.order_management_system.enums.OrderStatus;
 import br.com.leonardo.order_management_system.exception.EntityNotFoundException;
-import br.com.leonardo.order_management_system.mapper.order.OrderMapper;
+import br.com.leonardo.order_management_system.mapper.OrderMapper;
 import br.com.leonardo.order_management_system.repository.AddressRepository;
 import br.com.leonardo.order_management_system.repository.OrderRepository;
 import br.com.leonardo.order_management_system.repository.UserRepository;

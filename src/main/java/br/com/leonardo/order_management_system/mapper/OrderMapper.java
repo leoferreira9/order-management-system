@@ -1,4 +1,4 @@
-package br.com.leonardo.order_management_system.mapper.order;
+package br.com.leonardo.order_management_system.mapper;
 
 import br.com.leonardo.order_management_system.dto.order.OrderCreateDTO;
 import br.com.leonardo.order_management_system.dto.order.OrderDTO;

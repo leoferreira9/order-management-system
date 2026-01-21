@@ -4,7 +4,7 @@ import br.com.leonardo.order_management_system.dto.address.AddressCreateDTO;
 import br.com.leonardo.order_management_system.dto.address.AddressDTO;
 import br.com.leonardo.order_management_system.entity.Address;
 import br.com.leonardo.order_management_system.exception.EntityNotFoundException;
-import br.com.leonardo.order_management_system.mapper.address.AddressMapper;
+import br.com.leonardo.order_management_system.mapper.AddressMapper;
 import br.com.leonardo.order_management_system.repository.AddressRepository;
 import org.springframework.stereotype.Service;
 

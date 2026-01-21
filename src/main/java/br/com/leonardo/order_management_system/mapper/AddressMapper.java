@@ -1,4 +1,4 @@
-package br.com.leonardo.order_management_system.mapper.address;
+package br.com.leonardo.order_management_system.mapper;
 
 import br.com.leonardo.order_management_system.dto.address.AddressCreateDTO;
 import br.com.leonardo.order_management_system.dto.address.AddressDTO;

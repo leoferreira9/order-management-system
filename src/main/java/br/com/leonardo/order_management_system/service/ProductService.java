@@ -4,7 +4,7 @@ import br.com.leonardo.order_management_system.dto.product.ProductCreateDTO;
 import br.com.leonardo.order_management_system.dto.product.ProductDTO;
 import br.com.leonardo.order_management_system.entity.Product;
 import br.com.leonardo.order_management_system.exception.EntityNotFoundException;
-import br.com.leonardo.order_management_system.mapper.product.ProductMapper;
+import br.com.leonardo.order_management_system.mapper.ProductMapper;
 import br.com.leonardo.order_management_system.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
