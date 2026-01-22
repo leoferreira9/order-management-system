@@ -28,12 +28,14 @@ public class OrderService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final OrderMapper orderMapper;
+    private final FreightService freightService;
 
-    public OrderService(OrderRepository orderRepository, UserRepository userRepository, AddressRepository addressRepository, OrderMapper orderMapper){
+    public OrderService(OrderRepository orderRepository, UserRepository userRepository, AddressRepository addressRepository, OrderMapper orderMapper, FreightService freightService){
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
         this.orderMapper = orderMapper;
+        this.freightService = freightService;
     }
 
     public Order findOrderOrThrow(Long id){
@@ -48,13 +50,13 @@ public class OrderService {
         UUID uuid = UUID.randomUUID();
         LocalDateTime dateNow = LocalDateTime.now();
         String orderNumber = "ORD-" + uuid.toString().toUpperCase().substring(30, 36);
-        FreightInfo freightService = FreightService.calculateFreight(dto.getDeliveryType(), LocalDate.now());
+        FreightInfo info = freightService.calculateFreight(dto.getDeliveryType(), LocalDate.now());
 
         order.setOrderNumber(orderNumber);
         order.setOrderDate(dateNow);
-        order.setDeliveryDate(freightService.deliveryDate());
-        order.setDeliveryType(freightService.deliveryType());
-        order.setDeliveryFee(freightService.deliveryFee());
+        order.setDeliveryDate(info.deliveryDate());
+        order.setDeliveryType(info.deliveryType());
+        order.setDeliveryFee(info.deliveryFee());
         order.setOrderStatus(OrderStatus.CREATED);
         order.setAddress(address);
         order.setUser(user);

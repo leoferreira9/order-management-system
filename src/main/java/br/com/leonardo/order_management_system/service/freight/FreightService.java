@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Service
 public class FreightService {
 
-    public static FreightInfo calculateFreight(DeliveryType deliveryType, LocalDate orderDate){
+    public FreightInfo calculateFreight(DeliveryType deliveryType, LocalDate orderDate){
         BigDecimal deliveryFee = deliveryType.equals(DeliveryType.EXPRESS) ? new BigDecimal("30.00") : new BigDecimal("15.00");
         LocalDate deliveryDate = deliveryType.equals(DeliveryType.EXPRESS) ? orderDate.plusDays(2) : orderDate.plusDays(5);
         return new FreightInfo(deliveryFee, deliveryDate, deliveryType);
