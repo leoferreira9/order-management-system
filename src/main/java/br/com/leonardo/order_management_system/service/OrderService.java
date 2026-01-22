@@ -6,13 +6,14 @@ import br.com.leonardo.order_management_system.dto.order.OrderUpdateDTO;
 import br.com.leonardo.order_management_system.entity.Address;
 import br.com.leonardo.order_management_system.entity.Order;
 import br.com.leonardo.order_management_system.entity.User;
-import br.com.leonardo.order_management_system.enums.DeliveryType;
 import br.com.leonardo.order_management_system.enums.OrderStatus;
 import br.com.leonardo.order_management_system.exception.EntityNotFoundException;
 import br.com.leonardo.order_management_system.mapper.OrderMapper;
 import br.com.leonardo.order_management_system.repository.AddressRepository;
 import br.com.leonardo.order_management_system.repository.OrderRepository;
 import br.com.leonardo.order_management_system.repository.UserRepository;
+import br.com.leonardo.order_management_system.service.freight.FreightInfo;
+import br.com.leonardo.order_management_system.service.freight.FreightService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -39,24 +40,21 @@ public class OrderService {
         return orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Order not found with ID: " + id));
     }
 
-    //“V1 – regras temporárias, será refatorado”
-
     public OrderDTO create(OrderCreateDTO dto){
         Order order = orderMapper.toEntity(dto);
-
-        UUID uuid = UUID.randomUUID();
         Address address = addressRepository.findById(dto.getAddressId()).orElseThrow(() -> new EntityNotFoundException("Address not found with ID: " + dto.getAddressId()));
         User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + dto.getUserId()));
-        LocalDateTime dateNow = LocalDateTime.now();
-        LocalDate deliveryDate = dto.getDeliveryFee().compareTo(new BigDecimal(25)) < 0 ? LocalDate.now().plusDays(5) : LocalDate.now().plusDays(2);
-        DeliveryType deliveryType = dto.getDeliveryFee().compareTo(new BigDecimal(25)) < 0 ? DeliveryType.NORMAL : DeliveryType.EXPRESS;
-        String orderNumber = "ORD-" + uuid.toString().toUpperCase().substring(30, 36);
 
+        UUID uuid = UUID.randomUUID();
+        LocalDateTime dateNow = LocalDateTime.now();
+        String orderNumber = "ORD-" + uuid.toString().toUpperCase().substring(30, 36);
+        FreightInfo freightService = FreightService.calculateFreight(dto.getDeliveryType(), LocalDate.now());
 
         order.setOrderNumber(orderNumber);
         order.setOrderDate(dateNow);
-        order.setDeliveryDate(deliveryDate);
-        order.setDeliveryType(deliveryType);
+        order.setDeliveryDate(freightService.deliveryDate());
+        order.setDeliveryType(freightService.deliveryType());
+        order.setDeliveryFee(freightService.deliveryFee());
         order.setOrderStatus(OrderStatus.CREATED);
         order.setAddress(address);
         order.setUser(user);
