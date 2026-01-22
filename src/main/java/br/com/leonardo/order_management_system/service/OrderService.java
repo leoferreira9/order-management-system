@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Service
 public class OrderService {
@@ -44,12 +44,14 @@ public class OrderService {
     public OrderDTO create(OrderCreateDTO dto){
         Order order = orderMapper.toEntity(dto);
 
+        UUID uuid = UUID.randomUUID();
         Address address = addressRepository.findById(dto.getAddressId()).orElseThrow(() -> new EntityNotFoundException("Address not found with ID: " + dto.getAddressId()));
         User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + dto.getUserId()));
         LocalDateTime dateNow = LocalDateTime.now();
-        String orderNumber = "ORDER-" + dateNow.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         LocalDate deliveryDate = dto.getDeliveryFee().compareTo(new BigDecimal(25)) < 0 ? LocalDate.now().plusDays(5) : LocalDate.now().plusDays(2);
         DeliveryType deliveryType = dto.getDeliveryFee().compareTo(new BigDecimal(25)) < 0 ? DeliveryType.NORMAL : DeliveryType.EXPRESS;
+        String orderNumber = "ORD-" + uuid.toString().toUpperCase().substring(30, 36);
+
 
         order.setOrderNumber(orderNumber);
         order.setOrderDate(dateNow);
