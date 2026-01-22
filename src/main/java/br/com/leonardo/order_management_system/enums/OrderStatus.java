@@ -1,6 +1,7 @@
 package br.com.leonardo.order_management_system.enums;
 
 public enum OrderStatus {
+    CREATED,
     PAYMENT_PENDING,
     PAID,
     PROCESSING,

@@ -55,7 +55,7 @@ public class OrderService {
         order.setOrderDate(dateNow);
         order.setDeliveryDate(deliveryDate);
         order.setDeliveryType(deliveryType);
-        order.setOrderStatus(OrderStatus.PROCESSING);
+        order.setOrderStatus(OrderStatus.CREATED);
         order.setAddress(address);
         order.setUser(user);
         order.setTotalValue(new BigDecimal(100));
