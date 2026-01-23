@@ -8,6 +8,7 @@ import br.com.leonardo.order_management_system.entity.Order;
 import br.com.leonardo.order_management_system.entity.User;
 import br.com.leonardo.order_management_system.enums.OrderStatus;
 import br.com.leonardo.order_management_system.exception.EntityNotFoundException;
+import br.com.leonardo.order_management_system.exception.FailedToCancelOrder;
 import br.com.leonardo.order_management_system.exception.UpdateNotAvailable;
 import br.com.leonardo.order_management_system.mapper.OrderMapper;
 import br.com.leonardo.order_management_system.repository.AddressRepository;
@@ -108,4 +109,23 @@ public class OrderService {
         return orderMapper.toDto(savedOrder);
     }
 
+    public void cancel(Long id){
+        Order orderExists = findOrderOrThrow(id);
+        List<OrderStatus> statusDeleteOrderAvailable = new ArrayList<>(Arrays.asList(OrderStatus.CREATED, OrderStatus.PAYMENT_PENDING, OrderStatus.PAID, OrderStatus.PROCESSING, OrderStatus.DELIVERED, OrderStatus.RETURNED));
+
+        if(statusDeleteOrderAvailable.contains(orderExists.getOrderStatus())){
+            orderExists.setOrderStatus(OrderStatus.CANCELLED);
+        }else {
+            switch (orderExists.getOrderStatus()){
+                case OrderStatus.SENT:
+                    throw new FailedToCancelOrder("It's not possible to cancel the order. Order already shipped!");
+                case OrderStatus.REFUNDED:
+                    throw new FailedToCancelOrder("It's not possible to cancel the order. The order has already been refunded!");
+                case OrderStatus.CANCELLED:
+                    throw new FailedToCancelOrder("It's not possible to cancel the order. The order has already been cancelled!");
+            }
+        }
+
+        orderRepository.save(orderExists);
+    }
 }

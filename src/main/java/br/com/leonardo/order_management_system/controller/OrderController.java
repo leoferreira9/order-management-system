@@ -32,4 +32,10 @@ public class OrderController {
     public ResponseEntity<OrderDTO> update(@PathVariable Long id, @RequestBody @Valid OrderUpdateDTO dto){
         return ResponseEntity.status(200).body(service.update(id, dto));
     }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancel(@PathVariable Long id){
+        service.cancel(id);
+        return ResponseEntity.noContent().build();
+    }
 }
