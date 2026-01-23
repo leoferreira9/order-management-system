@@ -3,6 +3,8 @@ package br.com.leonardo.order_management_system.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.Objects;
+
 @Entity
 public class Address {
 
@@ -107,5 +109,17 @@ public class Address {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Address address = (Address) o;
+        return Objects.equals(getId(), address.getId()) && Objects.equals(getStreet(), address.getStreet()) && Objects.equals(getNumber(), address.getNumber()) && Objects.equals(getNeighborhood(), address.getNeighborhood()) && Objects.equals(getCity(), address.getCity()) && Objects.equals(getState(), address.getState()) && Objects.equals(getComplement(), address.getComplement()) && Objects.equals(getPostalCode(), address.getPostalCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getStreet(), getNumber(), getNeighborhood(), getCity(), getState(), getComplement(), getPostalCode());
     }
 }

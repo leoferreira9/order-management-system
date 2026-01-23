@@ -8,6 +8,7 @@ import br.com.leonardo.order_management_system.entity.Order;
 import br.com.leonardo.order_management_system.entity.User;
 import br.com.leonardo.order_management_system.enums.OrderStatus;
 import br.com.leonardo.order_management_system.exception.EntityNotFoundException;
+import br.com.leonardo.order_management_system.exception.UpdateNotAvailable;
 import br.com.leonardo.order_management_system.mapper.OrderMapper;
 import br.com.leonardo.order_management_system.repository.AddressRepository;
 import br.com.leonardo.order_management_system.repository.OrderRepository;
@@ -19,6 +20,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -73,11 +77,34 @@ public class OrderService {
 
     public OrderDTO update(Long id, OrderUpdateDTO dto){
         Order orderExists = findOrderOrThrow(id);
-        Address address = addressRepository.findById(dto.getAddressId()).orElseThrow(() -> new EntityNotFoundException("Address not found with ID: " + dto.getAddressId()));
 
-        orderExists.setAddress(address);
+        if(dto.getAddressId()!= null){
+            Address address = addressRepository.findById(dto.getAddressId()).orElseThrow(() -> new EntityNotFoundException("Address not found with ID: " + dto.getAddressId()));
+            if(!orderExists.getAddress().equals(address)){
+                List<OrderStatus> statusUpdateAddressAvailable = new ArrayList<>(Arrays.asList(OrderStatus.CREATED, OrderStatus.PAYMENT_PENDING, OrderStatus.PAID, OrderStatus.PROCESSING, OrderStatus.RETURNED));
+                if(statusUpdateAddressAvailable.contains(orderExists.getOrderStatus())){
+                    orderExists.setAddress(address);
+                } else {
+                    throw new UpdateNotAvailable("It's not possible to change the address. Order already shipped or cancelled!");
+                }
+            }
+        }
+
+        if(dto.getDeliveryType() != null){
+            FreightInfo info = freightService.calculateFreight(dto.getDeliveryType(), orderExists.getOrderDate().toLocalDate());
+            if(!orderExists.getDeliveryType().equals(dto.getDeliveryType())){
+                List<OrderStatus> statusUpdateTypeAvailable = new ArrayList<>(Arrays.asList(OrderStatus.CREATED, OrderStatus.PAYMENT_PENDING));
+                if(statusUpdateTypeAvailable.contains(orderExists.getOrderStatus())){
+                    orderExists.setDeliveryType(info.deliveryType());
+                    orderExists.setDeliveryFee(info.deliveryFee());
+                    orderExists.setDeliveryDate(info.deliveryDate());
+                } else {
+                    throw new UpdateNotAvailable("It's not possible to change the delivery type. Order already paid!");
+                }
+            }
+        }
+
         Order savedOrder = orderRepository.save(orderExists);
-
         return orderMapper.toDto(savedOrder);
     }
 
