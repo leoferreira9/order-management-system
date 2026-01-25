@@ -27,7 +27,7 @@ public class Product {
     @Column(length = 250)
     private String description;
 
-    private Product(){}
+    public Product(){}
 
     public Product(String name, BigDecimal price, String description) {
         this.name = name;

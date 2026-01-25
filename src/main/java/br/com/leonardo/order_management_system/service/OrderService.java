@@ -3,17 +3,15 @@ package br.com.leonardo.order_management_system.service;
 import br.com.leonardo.order_management_system.dto.order.OrderCreateDTO;
 import br.com.leonardo.order_management_system.dto.order.OrderDTO;
 import br.com.leonardo.order_management_system.dto.order.OrderUpdateDTO;
-import br.com.leonardo.order_management_system.entity.Address;
-import br.com.leonardo.order_management_system.entity.Order;
-import br.com.leonardo.order_management_system.entity.User;
+import br.com.leonardo.order_management_system.dto.orderitem.OrderItemCreateDTO;
+import br.com.leonardo.order_management_system.entity.*;
 import br.com.leonardo.order_management_system.enums.OrderStatus;
 import br.com.leonardo.order_management_system.exception.EntityNotFoundException;
 import br.com.leonardo.order_management_system.exception.FailedToCancelOrder;
+import br.com.leonardo.order_management_system.exception.FailedToCreateOrder;
 import br.com.leonardo.order_management_system.exception.UpdateNotAvailable;
 import br.com.leonardo.order_management_system.mapper.OrderMapper;
-import br.com.leonardo.order_management_system.repository.AddressRepository;
-import br.com.leonardo.order_management_system.repository.OrderRepository;
-import br.com.leonardo.order_management_system.repository.UserRepository;
+import br.com.leonardo.order_management_system.repository.*;
 import br.com.leonardo.order_management_system.service.freight.FreightInfo;
 import br.com.leonardo.order_management_system.service.freight.FreightService;
 import org.springframework.stereotype.Service;
@@ -34,13 +32,20 @@ public class OrderService {
     private final AddressRepository addressRepository;
     private final OrderMapper orderMapper;
     private final FreightService freightService;
+    private final ProductRepository productRepository;
 
-    public OrderService(OrderRepository orderRepository, UserRepository userRepository, AddressRepository addressRepository, OrderMapper orderMapper, FreightService freightService){
+    public OrderService(OrderRepository orderRepository,
+                        UserRepository userRepository,
+                        AddressRepository addressRepository,
+                        OrderMapper orderMapper,
+                        FreightService freightService,
+                        ProductRepository productRepository){
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
         this.orderMapper = orderMapper;
         this.freightService = freightService;
+        this.productRepository = productRepository;
     }
 
     public Order findOrderOrThrow(Long id){
@@ -48,6 +53,9 @@ public class OrderService {
     }
 
     public OrderDTO create(OrderCreateDTO dto){
+
+        if(dto.getItems().isEmpty()) throw new FailedToCreateOrder("The order cannot be completed, list of items is empty.");
+
         Order order = orderMapper.toEntity(dto);
         Address address = addressRepository.findById(dto.getAddressId()).orElseThrow(() -> new EntityNotFoundException("Address not found with ID: " + dto.getAddressId()));
         User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + dto.getUserId()));
@@ -56,6 +64,12 @@ public class OrderService {
         LocalDateTime dateNow = LocalDateTime.now();
         String orderNumber = "ORD-" + uuid.toString().toUpperCase().substring(30, 36);
         FreightInfo info = freightService.calculateFreight(dto.getDeliveryType(), LocalDate.now());
+        List<OrderItem> items = new ArrayList<>();
+
+        for(OrderItemCreateDTO i: dto.getItems()){
+            Product product = productRepository.findById(i.getProductId()).orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + i.getProductId()));
+            items.add(new OrderItem(product, order, i.getQuantity(), product.getPrice()));
+        }
 
         order.setOrderNumber(orderNumber);
         order.setOrderDate(dateNow);
@@ -63,6 +77,7 @@ public class OrderService {
         order.setDeliveryType(info.deliveryType());
         order.setDeliveryFee(info.deliveryFee());
         order.setOrderStatus(OrderStatus.CREATED);
+        order.setOrderItemList(items);
         order.setAddress(address);
         order.setUser(user);
         order.setTotalValue(new BigDecimal(100));
