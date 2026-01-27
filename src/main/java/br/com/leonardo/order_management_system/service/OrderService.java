@@ -71,16 +71,26 @@ public class OrderService {
             items.add(new OrderItem(product, order, i.getQuantity(), product.getPrice()));
         }
 
+        BigDecimal orderTotalValue = BigDecimal.ZERO;
+        for(OrderItem i: items){
+            BigDecimal price = i.getUnitPrice();
+            int quantity = i.getQuantity();
+            orderTotalValue = orderTotalValue.add(price.multiply(BigDecimal.valueOf(quantity)));
+        }
+
+        orderTotalValue = orderTotalValue.add(info.deliveryFee());
+
         order.setOrderNumber(orderNumber);
         order.setOrderDate(dateNow);
         order.setDeliveryDate(info.deliveryDate());
         order.setDeliveryType(info.deliveryType());
+        order.setTotalValue(orderTotalValue);
         order.setDeliveryFee(info.deliveryFee());
         order.setOrderStatus(OrderStatus.CREATED);
         order.setOrderItemList(items);
         order.setAddress(address);
         order.setUser(user);
-        order.setTotalValue(new BigDecimal(100));
+
 
         Order savedOrder = orderRepository.save(order);
         return orderMapper.toDto(savedOrder);
