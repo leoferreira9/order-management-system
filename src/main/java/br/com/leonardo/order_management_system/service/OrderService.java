@@ -33,19 +33,22 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final FreightService freightService;
     private final ProductRepository productRepository;
+    private final OrderTotalValueCalculate orderCalculate;
 
     public OrderService(OrderRepository orderRepository,
                         UserRepository userRepository,
                         AddressRepository addressRepository,
                         OrderMapper orderMapper,
                         FreightService freightService,
-                        ProductRepository productRepository){
+                        ProductRepository productRepository,
+                        OrderTotalValueCalculate orderCalculate){
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
         this.orderMapper = orderMapper;
         this.freightService = freightService;
         this.productRepository = productRepository;
+        this.orderCalculate = orderCalculate;
     }
 
     public Order findOrderOrThrow(Long id){
@@ -71,14 +74,7 @@ public class OrderService {
             items.add(new OrderItem(product, order, i.getQuantity(), product.getPrice()));
         }
 
-        BigDecimal orderTotalValue = BigDecimal.ZERO;
-        for(OrderItem i: items){
-            BigDecimal price = i.getUnitPrice();
-            int quantity = i.getQuantity();
-            orderTotalValue = orderTotalValue.add(price.multiply(BigDecimal.valueOf(quantity)));
-        }
-
-        orderTotalValue = orderTotalValue.add(info.deliveryFee());
+        BigDecimal orderTotalValue = orderCalculate.calculateOrder(items, info.deliveryFee());
 
         order.setOrderNumber(orderNumber);
         order.setOrderDate(dateNow);
@@ -90,7 +86,6 @@ public class OrderService {
         order.setOrderItemList(items);
         order.setAddress(address);
         order.setUser(user);
-
 
         Order savedOrder = orderRepository.save(order);
         return orderMapper.toDto(savedOrder);
@@ -124,6 +119,9 @@ public class OrderService {
                     orderExists.setDeliveryType(info.deliveryType());
                     orderExists.setDeliveryFee(info.deliveryFee());
                     orderExists.setDeliveryDate(info.deliveryDate());
+
+                    BigDecimal orderTotalValue = orderCalculate.calculateOrder(orderExists.getOrderItemList(), info.deliveryFee());
+                    orderExists.setTotalValue(orderTotalValue);
                 } else {
                     throw new UpdateNotAvailable("It's not possible to change the delivery type. Order already paid!");
                 }
