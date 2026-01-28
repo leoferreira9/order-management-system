@@ -63,9 +63,23 @@ public class Order {
     @Column(nullable = false, precision = 9, scale = 2)
     private BigDecimal totalValue;
 
+    private LocalDateTime refundedAt;
+
+    private BigDecimal refundAmount;
+
     public Order(){}
 
-    public Order(List<OrderItem> orderItemList, String orderNumber, LocalDateTime orderDate, LocalDate deliveryDate, DeliveryType deliveryType, OrderStatus orderStatus, BigDecimal deliveryFee, User user, Address address) {
+    public Order(List<OrderItem> orderItemList,
+                 String orderNumber,
+                 LocalDateTime orderDate,
+                 LocalDate deliveryDate,
+                 DeliveryType deliveryType,
+                 OrderStatus orderStatus,
+                 BigDecimal deliveryFee,
+                 User user,
+                 Address address,
+                 LocalDateTime refundedAt,
+                 BigDecimal refundAmount) {
         this.orderItemList = orderItemList;
         this.orderNumber = orderNumber;
         this.orderDate = orderDate;
@@ -75,6 +89,8 @@ public class Order {
         this.deliveryFee = deliveryFee;
         this.user = user;
         this.address = address;
+        this.refundedAt = refundedAt;
+        this.refundAmount = refundAmount;
     }
 
     public Long getId() {
@@ -163,5 +179,21 @@ public class Order {
 
     public void setTotalValue(BigDecimal totalValue) {
         this.totalValue = totalValue;
+    }
+
+    public LocalDateTime getRefundedAt() {
+        return refundedAt;
+    }
+
+    public void setRefundedAt(LocalDateTime refundedAt) {
+        this.refundedAt = refundedAt;
+    }
+
+    public BigDecimal getRefundAmount() {
+        return refundAmount;
+    }
+
+    public void setRefundAmount(BigDecimal refundAmount) {
+        this.refundAmount = refundAmount;
     }
 }

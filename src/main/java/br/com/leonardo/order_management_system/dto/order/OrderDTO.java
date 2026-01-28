@@ -5,6 +5,7 @@ import br.com.leonardo.order_management_system.dto.orderitem.OrderItemDTO;
 import br.com.leonardo.order_management_system.dto.user.UserDTO;
 import br.com.leonardo.order_management_system.enums.DeliveryType;
 import br.com.leonardo.order_management_system.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,6 +25,12 @@ public class OrderDTO {
     private BigDecimal totalValue;
     private UserDTO user;
     private AddressDTO address;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime refundedAt;
+
+    private BigDecimal refundAmount;
+
     private List<OrderItemDTO> items = new ArrayList<>();
 
     public Long getId() {
@@ -112,5 +119,21 @@ public class OrderDTO {
 
     public void setItems(List<OrderItemDTO> items) {
         this.items = items;
+    }
+
+    public LocalDateTime getRefundedAt() {
+        return refundedAt;
+    }
+
+    public void setRefundedAt(LocalDateTime refundedAt) {
+        this.refundedAt = refundedAt;
+    }
+
+    public BigDecimal getRefundAmount() {
+        return refundAmount;
+    }
+
+    public void setRefundAmount(BigDecimal refundAmount) {
+        this.refundAmount = refundAmount;
     }
 }

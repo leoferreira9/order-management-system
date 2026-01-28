@@ -4,6 +4,7 @@ import br.com.leonardo.order_management_system.dto.order.OrderCreateDTO;
 import br.com.leonardo.order_management_system.dto.order.OrderDTO;
 import br.com.leonardo.order_management_system.dto.order.OrderUpdateDTO;
 import br.com.leonardo.order_management_system.service.OrderService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,13 @@ public class OrderController {
     @PutMapping("/{id}/cancel")
     public ResponseEntity<Void> cancel(@PathVariable Long id){
         service.cancel(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Transactional
+    @PutMapping("/{id}/refund")
+    public ResponseEntity<Void> refund(@PathVariable Long id){
+        service.refund(id);
         return ResponseEntity.noContent().build();
     }
 }

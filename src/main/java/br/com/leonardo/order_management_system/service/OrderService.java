@@ -6,10 +6,7 @@ import br.com.leonardo.order_management_system.dto.order.OrderUpdateDTO;
 import br.com.leonardo.order_management_system.dto.orderitem.OrderItemCreateDTO;
 import br.com.leonardo.order_management_system.entity.*;
 import br.com.leonardo.order_management_system.enums.OrderStatus;
-import br.com.leonardo.order_management_system.exception.EntityNotFoundException;
-import br.com.leonardo.order_management_system.exception.FailedToCancelOrder;
-import br.com.leonardo.order_management_system.exception.FailedToCreateOrder;
-import br.com.leonardo.order_management_system.exception.UpdateNotAvailable;
+import br.com.leonardo.order_management_system.exception.*;
 import br.com.leonardo.order_management_system.mapper.OrderMapper;
 import br.com.leonardo.order_management_system.repository.*;
 import br.com.leonardo.order_management_system.service.freight.FreightInfo;
@@ -147,6 +144,20 @@ public class OrderService {
                 case OrderStatus.CANCELLED:
                     throw new FailedToCancelOrder("It's not possible to cancel the order. The order has already been cancelled!");
             }
+        }
+
+        orderRepository.save(orderExists);
+    }
+
+    public void refund(Long id){
+        Order orderExists = findOrderOrThrow(id);
+
+        if(orderExists.getOrderStatus().equals(OrderStatus.CANCELLED)){
+            orderExists.setRefundedAt(LocalDateTime.now());
+            orderExists.setRefundAmount(orderExists.getTotalValue());
+            orderExists.setOrderStatus(OrderStatus.REFUNDED);
+        } else {
+            throw new FailedToRefundOrder("Failed to refund order!");
         }
 
         orderRepository.save(orderExists);
