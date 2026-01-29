@@ -162,4 +162,49 @@ public class OrderService {
 
         orderRepository.save(orderExists);
     }
+
+    public OrderDTO updateOrderStatus(Long id, OrderStatus status){
+        Order orderExists = findOrderOrThrow(id);
+
+        if(orderExists.getOrderStatus().equals(OrderStatus.CREATED)){
+             if(status.equals(OrderStatus.PAYMENT_PENDING)){
+                 orderExists.setOrderStatus(OrderStatus.PAYMENT_PENDING);
+             } else {
+                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order not ready for payment yet!");
+             }
+        } else if(orderExists.getOrderStatus().equals(OrderStatus.PAYMENT_PENDING)){
+            if(status.equals(OrderStatus.PAID)){
+                orderExists.setOrderStatus(OrderStatus.PAID);
+            } else {
+                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order awaiting payment!");
+            }
+        } else if(orderExists.getOrderStatus().equals(OrderStatus.PAID)){
+            if(status.equals(OrderStatus.PROCESSING)){
+                orderExists.setOrderStatus(OrderStatus.PROCESSING);
+            } else {
+                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order processing payment!");
+            }
+        } else if(orderExists.getOrderStatus().equals(OrderStatus.PROCESSING)){
+            if(status.equals(OrderStatus.SENT)){
+                orderExists.setOrderStatus(OrderStatus.SENT);
+            } else {
+                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order being processed!");
+            }
+        } else if(orderExists.getOrderStatus().equals(OrderStatus.SENT)){
+            if(status.equals(OrderStatus.DELIVERED)){
+                orderExists.setOrderStatus(OrderStatus.DELIVERED);
+            } else {
+                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order still in transit!");
+            }
+        } else if(orderExists.getOrderStatus().equals(OrderStatus.DELIVERED)){
+            if(status.equals(OrderStatus.RETURNED)){
+                orderExists.setOrderStatus(OrderStatus.RETURNED);
+            } else {
+                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order already delivered!");
+            }
+        }
+
+        orderRepository.save(orderExists);
+        return orderMapper.toDto(orderExists);
+    }
 }

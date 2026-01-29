@@ -3,6 +3,7 @@ package br.com.leonardo.order_management_system.controller;
 import br.com.leonardo.order_management_system.dto.order.OrderCreateDTO;
 import br.com.leonardo.order_management_system.dto.order.OrderDTO;
 import br.com.leonardo.order_management_system.dto.order.OrderUpdateDTO;
+import br.com.leonardo.order_management_system.enums.OrderStatus;
 import br.com.leonardo.order_management_system.service.OrderService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -45,5 +46,10 @@ public class OrderController {
     public ResponseEntity<Void> refund(@PathVariable Long id){
         service.refund(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/updateStatus")
+    public ResponseEntity<OrderDTO> updateStatus(@PathVariable Long id, @RequestBody OrderStatus orderStatus){
+        return ResponseEntity.status(200).body(service.updateOrderStatus(id, orderStatus));
     }
 }
