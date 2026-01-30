@@ -90,6 +90,10 @@ public class OrderService {
         return orderMapper.toDto(order);
     }
 
+    public List<OrderDTO> findAllByUserId(Long id){
+        return orderRepository.findAllByUserId(id).stream().map(orderMapper::toDto).toList();
+    }
+
     public OrderDTO update(Long id, OrderUpdateDTO dto){
         Order orderExists = findOrderOrThrow(id);
 

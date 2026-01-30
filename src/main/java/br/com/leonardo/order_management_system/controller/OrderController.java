@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
@@ -28,6 +30,11 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<OrderDTO> findById(@PathVariable Long id){
         return ResponseEntity.status(200).body(service.findById(id));
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<OrderDTO>> findAllByUserId(@PathVariable Long id){
+        return ResponseEntity.status(200).body(service.findAllByUserId(id));
     }
 
     @PutMapping("/{id}")
