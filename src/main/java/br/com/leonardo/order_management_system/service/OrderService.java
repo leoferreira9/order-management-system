@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -166,42 +163,20 @@ public class OrderService {
     public OrderDTO updateOrderStatus(Long id, OrderStatus status){
         Order orderExists = findOrderOrThrow(id);
 
-        if(orderExists.getOrderStatus().equals(OrderStatus.CREATED)){
-             if(status.equals(OrderStatus.PAYMENT_PENDING)){
-                 orderExists.setOrderStatus(OrderStatus.PAYMENT_PENDING);
-             } else {
-                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order not ready for payment yet!");
-             }
-        } else if(orderExists.getOrderStatus().equals(OrderStatus.PAYMENT_PENDING)){
-            if(status.equals(OrderStatus.PAID)){
-                orderExists.setOrderStatus(OrderStatus.PAID);
-            } else {
-                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order awaiting payment!");
-            }
-        } else if(orderExists.getOrderStatus().equals(OrderStatus.PAID)){
-            if(status.equals(OrderStatus.PROCESSING)){
-                orderExists.setOrderStatus(OrderStatus.PROCESSING);
-            } else {
-                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order processing payment!");
-            }
-        } else if(orderExists.getOrderStatus().equals(OrderStatus.PROCESSING)){
-            if(status.equals(OrderStatus.SENT)){
-                orderExists.setOrderStatus(OrderStatus.SENT);
-            } else {
-                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order being processed!");
-            }
-        } else if(orderExists.getOrderStatus().equals(OrderStatus.SENT)){
-            if(status.equals(OrderStatus.DELIVERED)){
-                orderExists.setOrderStatus(OrderStatus.DELIVERED);
-            } else {
-                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order still in transit!");
-            }
-        } else if(orderExists.getOrderStatus().equals(OrderStatus.DELIVERED)){
-            if(status.equals(OrderStatus.RETURNED)){
-                orderExists.setOrderStatus(OrderStatus.RETURNED);
-            } else {
-                throw new FailedToUpdateOrderStatus("The order status could not be updated. Order already delivered!");
-            }
+        Map<OrderStatus, Set<OrderStatus>> map = new EnumMap<>(OrderStatus.class);
+        map.put(OrderStatus.CREATED, EnumSet.of(OrderStatus.PAYMENT_PENDING));
+        map.put(OrderStatus.PAYMENT_PENDING, EnumSet.of(OrderStatus.PAID));
+        map.put(OrderStatus.PAID, EnumSet.of(OrderStatus.PROCESSING));
+        map.put(OrderStatus.PROCESSING, EnumSet.of(OrderStatus.SENT));
+        map.put(OrderStatus.SENT, EnumSet.of(OrderStatus.DELIVERED));
+        map.put(OrderStatus.DELIVERED, EnumSet.of(OrderStatus.RETURNED));
+        map.put(OrderStatus.RETURNED, EnumSet.of(OrderStatus.SENT, OrderStatus.DELIVERED));
+
+        Set<OrderStatus> allowed = map.get(orderExists.getOrderStatus());
+        if(allowed != null && allowed.contains(status)){
+            orderExists.setOrderStatus(status);
+        } else {
+            throw new FailedToUpdateOrderStatus("Failed to update order status!");
         }
 
         orderRepository.save(orderExists);
