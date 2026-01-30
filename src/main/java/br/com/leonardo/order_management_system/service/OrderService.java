@@ -160,23 +160,27 @@ public class OrderService {
         orderRepository.save(orderExists);
     }
 
-    public OrderDTO updateOrderStatus(Long id, OrderStatus status){
-        Order orderExists = findOrderOrThrow(id);
 
-        Map<OrderStatus, Set<OrderStatus>> map = new EnumMap<>(OrderStatus.class);
+    private static final Map<OrderStatus, Set<OrderStatus>> map = new EnumMap<>(OrderStatus.class);
+
+    static {
         map.put(OrderStatus.CREATED, EnumSet.of(OrderStatus.PAYMENT_PENDING));
         map.put(OrderStatus.PAYMENT_PENDING, EnumSet.of(OrderStatus.PAID));
         map.put(OrderStatus.PAID, EnumSet.of(OrderStatus.PROCESSING));
         map.put(OrderStatus.PROCESSING, EnumSet.of(OrderStatus.SENT));
         map.put(OrderStatus.SENT, EnumSet.of(OrderStatus.DELIVERED));
         map.put(OrderStatus.DELIVERED, EnumSet.of(OrderStatus.RETURNED));
-        map.put(OrderStatus.RETURNED, EnumSet.of(OrderStatus.SENT, OrderStatus.DELIVERED));
+        map.put(OrderStatus.RETURNED, EnumSet.of(OrderStatus.SENT));
+    }
 
+    public OrderDTO updateOrderStatus(Long id, OrderStatus status){
+        Order orderExists = findOrderOrThrow(id);
         Set<OrderStatus> allowed = map.get(orderExists.getOrderStatus());
+
         if(allowed != null && allowed.contains(status)){
             orderExists.setOrderStatus(status);
         } else {
-            throw new FailedToUpdateOrderStatus("Failed to update order status!");
+            throw new FailedToUpdateOrderStatus("Cannot update order from " + orderExists.getOrderStatus() + " to " + status);
         }
 
         orderRepository.save(orderExists);
