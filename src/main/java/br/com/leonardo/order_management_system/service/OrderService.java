@@ -91,6 +91,7 @@ public class OrderService {
     }
 
     public List<OrderDTO> findAllByUserId(Long id){
+        userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + id));
         return orderRepository.findAllByUserId(id).stream().map(orderMapper::toDto).toList();
     }
 
