@@ -28,7 +28,7 @@ public class AddressController {
         return ResponseEntity.status(201).body(service.create(dto));
     }
 
-    @Operation(summary = "Find address by ID", description = "Finds a address by it's ID")
+    @Operation(summary = "Find address by ID", description = "Finds a address by its ID")
     @GetMapping("/{id}")
     public ResponseEntity<AddressDTO> findById(@PathVariable Long id){
         return ResponseEntity.status(200).body(service.findById(id));

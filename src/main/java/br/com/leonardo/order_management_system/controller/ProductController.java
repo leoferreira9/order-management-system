@@ -28,7 +28,7 @@ public class ProductController {
         return ResponseEntity.status(201).body(service.create(dto));
     }
 
-    @Operation(summary = "Find product by ID", description = "Finds a product by it's ID")
+    @Operation(summary = "Find product by ID", description = "Finds a product by its ID")
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> findById(@PathVariable Long id){
         return ResponseEntity.status(200).body(service.findById(id));

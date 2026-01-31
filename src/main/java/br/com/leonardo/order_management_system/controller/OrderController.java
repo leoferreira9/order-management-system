@@ -31,7 +31,7 @@ public class OrderController {
         return ResponseEntity.status(201).body(service.create(dto));
     }
 
-    @Operation(summary = "Find order by ID", description = "Finds a order by it's ID")
+    @Operation(summary = "Find order by ID", description = "Finds a order by its ID")
     @GetMapping("/{id}")
     public ResponseEntity<OrderDTO> findById(@PathVariable Long id){
         return ResponseEntity.status(200).body(service.findById(id));

@@ -28,7 +28,7 @@ public class UserController {
         return ResponseEntity.status(201).body(service.create(dto));
     }
 
-    @Operation(summary = "Find user by ID", description = "Finds a user by it's ID")
+    @Operation(summary = "Find user by ID", description = "Finds a user by its ID")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable Long id){
         return ResponseEntity.status(200).body(service.findById(id));
